@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.bigml</groupId>
+    <artifactId>bigml</artifactId>
+    <packaging>jar</packaging>
+    <version>1.0-SNAPSHOT</version>
+
+    <name>BigML :: Root</name>
+    <description>Big Data Management Modeling Framework</description>
+    <inceptionYear>2015</inceptionYear>
+
+    <dependencies>
+        
+    </dependencies>
+
+    <build>
+        <plugins>
+            <!-- Licence headers -->
+            <plugin>
+                <inherited>false</inherited>
+                <groupId>com.mycila.maven-license-plugin</groupId>
+                <artifactId>maven-license-plugin</artifactId>
+                <version>1.9.0</version>
+                <configuration>
+                    <strictCheck>true</strictCheck>
+                    <header>${project.basedir}/HEADER</header>
+                    <failIfMissing>true</failIfMissing>
+                    <aggregate>true</aggregate>
+                    <properties>
+                        <projectname>BigML</projectname>
+                        <owner>Nicolas Ferry</owner>
+                        <year>${project.inceptionYear}</year>
+                        <artid>${project.artifactId}</artid>
+                    </properties>
+                    <mapping>
+                        <scala>JAVADOC_STYLE</scala>
+                        <conf>SCRIPT_STYLE</conf>
+                    </mapping>
+                    <excludes>
+                        <exclude>.gitignore</exclude>
+                        <exclude>.cache</exclude>
+                        <exclude>**/site.xml</exclude>
+                        <exclude>*.log</exclude>
+                        <exclude>*.srt</exclude>
+                        <exclude>*.csv</exclude>
+                        <exclude>*.txt</exclude>
+                        <exclude>*.json</exclude>
+                        <exclude>.idea/**</exclude>
+                        <exclude>**/src/main/resources/lgpl_header.txt</exclude>
+                        <exclude>**/src/test/resources/**</exclude>
+                        <exclude>**/src/test/data/**</exclude>
+                    </excludes>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>check-headers</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>format</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>2.5.3</version>
+                <configuration>
+                    <descriptors>
+                        <descriptor>src/assembly/standalone-jar.xml</descriptor>
+                    </descriptors>
+                    <appendAssemblyId>true</appendAssemblyId>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
