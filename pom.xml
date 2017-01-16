@@ -4,18 +4,46 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.bigml</groupId>
+    <groupId>bigml</groupId>
     <artifactId>bigml</artifactId>
-    <packaging>jar</packaging>
     <version>1.0-SNAPSHOT</version>
 
-    <name>BigML :: Root</name>
-    <description>Big Data Management Modeling Framework</description>
-    <inceptionYear>2015</inceptionYear>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.source>1.8</maven.compiler.source>
+    </properties>
 
     <dependencies>
-        
+        <dependency>
+            <groupId>org.kevoree.modeling</groupId>
+            <artifactId>org.kevoree.modeling.microframework</artifactId>
+            <version>4.26.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.yaml</groupId>
+            <artifactId>snakeyaml</artifactId>
+            <version>1.17</version>
+        </dependency>
+        <dependency>
+            <groupId>org.cloudml</groupId>
+            <artifactId>root</artifactId>
+            <version>1.7.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.jclouds.provider</groupId>
+            <artifactId>aws-ec2</artifactId>
+            <version>1.9.2</version>
+        </dependency>
     </dependencies>
+
+    <repositories>
+        <repository>
+            <id>cloudml</id>
+            <name>cloudml</name>
+            <url>http://54.75.18.26:8088/nexus/content/repositories/cloudml/</url>
+        </repository>
+    </repositories>
 
     <build>
         <plugins>
@@ -27,13 +55,16 @@
                 <version>1.9.0</version>
                 <configuration>
                     <strictCheck>true</strictCheck>
-                    <header>${project.basedir}/HEADER</header>
+                    <header>${project.basedir}/lgpl_header.txt</header>
                     <failIfMissing>true</failIfMissing>
                     <aggregate>true</aggregate>
                     <properties>
                         <projectname>BigML</projectname>
+                        <projecturl>http://cloudml.org</projecturl>
+                        <organization>SINTEF Digital</organization>
                         <owner>Nicolas Ferry</owner>
                         <year>${project.inceptionYear}</year>
+                        <email>nicolas.ferry@sintef.no</email>
                         <artid>${project.artifactId}</artid>
                     </properties>
                     <mapping>
@@ -49,6 +80,8 @@
                         <exclude>*.csv</exclude>
                         <exclude>*.txt</exclude>
                         <exclude>*.json</exclude>
+                        <exclude>*.ps1</exclude>
+                        <exclude>*.dot</exclude>
                         <exclude>.idea/**</exclude>
                         <exclude>**/src/main/resources/lgpl_header.txt</exclude>
                         <exclude>**/src/test/resources/**</exclude>
@@ -65,22 +98,57 @@
                     </execution>
                 </executions>
             </plugin>
+
             <plugin>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <version>2.5.3</version>
-                <configuration>
-                    <descriptors>
-                        <descriptor>src/assembly/standalone-jar.xml</descriptor>
-                    </descriptors>
-                    <appendAssemblyId>true</appendAssemblyId>
-                </configuration>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>2.3</version>
                 <executions>
                     <execution>
-                        <id>make-assembly</id>
-                        <phase>package</phase>
+                        <id>copy-dependencies</id>
+                        <phase>prepare-package</phase>
                         <goals>
-                            <goal>single</goal>
+                            <goal>copy-dependencies</goal>
                         </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/lib</outputDirectory>
+                            <overWriteReleases>false</overWriteReleases>
+                            <overWriteSnapshots>true</overWriteSnapshots>
+                            <includeScope>runtime</includeScope>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            <classpathPrefix>lib/</classpathPrefix>
+                            <mainClass>model.temp</mainClass>
+                        </manifest>
+                    </archive>
+                    <finalName>bigml-exec</finalName>
+                </configuration>
+            </plugin>
+
+
+            <plugin>
+                <groupId>org.kevoree.modeling</groupId>
+                <artifactId>generator.mavenplugin</artifactId>
+                <version>4.27.0.2</version>
+                <executions>
+                    <execution>
+                        <id>ModelGen</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <metaModelFile>metamodel/bigml.mm</metaModelFile>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
